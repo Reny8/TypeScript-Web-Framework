@@ -117,9 +117,67 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/index.ts":[function(require,module,exports) {
+})({"src/models/User.ts":[function(require,module,exports) {
+"use strict";
 
-},{}],"../../../AppData/Roaming/nvm/v16.13.1/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var User = /** @class */function () {
+  function User(data) {
+    this.data = data;
+    this.events = {};
+  }
+  User.prototype.get = function (propName) {
+    return this.data[propName];
+  };
+  User.prototype.set = function (update) {
+    Object.assign(this.data, update);
+  };
+  User.prototype.on = function (eventName, callback) {
+    var handlers = this.events[eventName] || [];
+    handlers.push(callback);
+    this.events[eventName] = handlers;
+  };
+  User.prototype.trigger = function (eventName) {
+    if (!this.events[eventName]) {
+      return;
+    }
+    this.events[eventName].map(function (method) {
+      method();
+    });
+  };
+  return User;
+}();
+exports.default = User;
+},{}],"src/index.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var User_1 = __importDefault(require("./models/User"));
+var newUser = new User_1.default({
+  name: "Reny",
+  age: 24
+});
+newUser.on("change", function () {
+  console.log("Change Event 1 was triggered");
+});
+newUser.on("change", function () {
+  console.log("Change Event 2 was triggered");
+});
+newUser.on("click", function () {
+  console.log("Click Event 1 was triggered");
+});
+console.log(newUser);
+newUser.trigger("change");
+},{"./models/User":"src/models/User.ts"}],"../../../AppData/Roaming/nvm/v16.13.1/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
