@@ -1,6 +1,6 @@
 import { Callback } from "../types/Callback";
 import UserProps from "./UserProps";
-
+import axios, { AxiosResponse } from "axios";
 export default class User {
   events: { [key: string]: Callback[] } = {};
   constructor(private data: UserProps) {}
@@ -26,6 +26,34 @@ export default class User {
     });
   }
 
-  //   fetch(): Promise {}
-  //   save(): Promise {}
+  async fetch(): Promise<void> {
+    try {
+      let result = await axios
+        .get(`http://localhost:3000/users/${this.get("id")}`)
+        .then((response: AxiosResponse): void => {
+          this.set(response.data);
+          console.log(response.data);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async save(): Promise<void> {
+    const id = this.get("id");
+    try {
+      if (id) {
+        let result = await axios.put(
+          `http://localhost:3000/users/${id}`,
+          this.data
+        );
+      } else {
+        let result = await axios.post(
+          "http://localhost:3000/users/",
+          this.data
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
