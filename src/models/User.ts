@@ -13,4 +13,7 @@ export default class User extends Model<UserProps> {
       new Attributes<UserProps>(attrs)
     );
   }
+  isAdminUser(): boolean {
+    return this.get("id") === 1;
+  }
 }

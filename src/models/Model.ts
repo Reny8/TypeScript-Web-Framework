@@ -25,9 +25,10 @@ export class Model<T extends HasId> {
     private sync: Sync<T>,
     private attributes: ModelAttributes<T>
   ) {}
-  get get() {
-    return this.attributes.get;
-  }
+
+  get = this.attributes.get;
+  trigger = this.events.trigger;
+  on = this.events.on;
 
   set(update: T): void {
     this.attributes.set(update);
@@ -35,13 +36,6 @@ export class Model<T extends HasId> {
       console.log(this);
     });
     this.trigger("change");
-  }
-
-  get trigger() {
-    return this.events.trigger;
-  }
-  get on() {
-    return this.events.on;
   }
   fetch(): void {
     const id = this.get("id");

@@ -564,6 +564,7 @@ const user = (0, _userDefault.default).buildUser({
     id: 2
 });
 user.fetch();
+console.log(user.isAdminUser());
 
 },{"./models/User":"4rcHn","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4rcHn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -576,6 +577,9 @@ const rootUrl = "http://localhost:3000/users";
 class User extends (0, _model.Model) {
     static buildUser(attrs) {
         return new User(new (0, _eventing.Eventing)(), new (0, _apiSync.ApiSync)(rootUrl), new (0, _attributes.Attributes)(attrs));
+    }
+    isAdminUser() {
+        return this.get("id") === 1;
     }
 }
 exports.default = User;
@@ -659,9 +663,9 @@ class Model {
         this.events = events;
         this.sync = sync;
         this.attributes = attributes;
-    }
-    get get() {
-        return this.attributes.get;
+        this.get = this.attributes.get;
+        this.trigger = this.events.trigger;
+        this.on = this.events.on;
     }
     set(update) {
         this.attributes.set(update);
@@ -669,12 +673,6 @@ class Model {
             console.log(this);
         });
         this.trigger("change");
-    }
-    get trigger() {
-        return this.events.trigger;
-    }
-    get on() {
-        return this.events.on;
     }
     fetch() {
         const id = this.get("id");
