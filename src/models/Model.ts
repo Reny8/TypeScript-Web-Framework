@@ -32,9 +32,6 @@ export class Model<T extends HasId> {
 
   set(update: T): void {
     this.attributes.set(update);
-    this.on("change", () => {
-      console.log(this);
-    });
     this.trigger("change");
   }
   fetch(): void {
