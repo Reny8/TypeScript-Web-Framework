@@ -560,60 +560,27 @@ function hmrAccept(bundle, id) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _user = require("./models/User");
 var _userDefault = parcelHelpers.interopDefault(_user);
-const user = new (0, _userDefault.default)({
-    id: 1
+const user = (0, _userDefault.default).buildUser({
+    id: 2
 });
-user.save();
+user.fetch();
 
 },{"./models/User":"4rcHn","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4rcHn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-var _eventing = require("./Eventing");
-var _sync = require("./Sync");
+var _model = require("./Model");
 var _attributes = require("./Attributes");
-class User {
-    events = new (0, _eventing.Eventing)();
-    sync = new (0, _sync.Sync)("http://localhost:3000/users");
-    constructor(attrs){
-        this.attributes = new (0, _attributes.Attributes)(attrs);
-    }
-    get get() {
-        return this.attributes.get;
-    }
-    set(update) {
-        this.attributes.set(update);
-        this.on("change", ()=>{
-            console.log("User was changed");
-        });
-        this.trigger("change");
-    }
-    get trigger() {
-        return this.events.trigger;
-    }
-    get on() {
-        return this.events.on;
-    }
-    fetch() {
-        const id = this.get("id");
-        if (typeof id !== "number") throw new Error("Cannot Fetch Without an ID");
-        this.sync.fetch(id).then((response)=>{
-            this.set(response.data);
-        });
-    }
-    save() {
-        this.sync.save(this.attributes.getAllAttributes()).then((response)=>{
-            this.on("saved", ()=>{
-                console.log(this);
-            });
-            this.trigger("saved");
-        }).catch(()=>{
-            this.trigger("error");
-        });
+var _eventing = require("./Eventing");
+var _apiSync = require("./ApiSync");
+const rootUrl = "http://localhost:3000/users";
+class User extends (0, _model.Model) {
+    static buildUser(attrs) {
+        return new User(new (0, _eventing.Eventing)(), new (0, _apiSync.ApiSync)(rootUrl), new (0, _attributes.Attributes)(attrs));
     }
 }
 exports.default = User;
 
-},{"./Eventing":"7459s","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Sync":"QO3Gl","./Attributes":"6Bbds"}],"7459s":[function(require,module,exports) {
+},{"./Eventing":"7459s","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Attributes":"6Bbds","./Model":"f033k","./ApiSync":"3wylh"}],"7459s":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Eventing", ()=>Eventing);
@@ -662,13 +629,79 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"QO3Gl":[function(require,module,exports) {
+},{}],"6Bbds":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Sync", ()=>Sync);
+parcelHelpers.export(exports, "Attributes", ()=>Attributes);
+class Attributes {
+    constructor(data){
+        this.data = data;
+        this.//  K can only ever be a type from T which is current UserProps
+        // Return type is interface lookup
+        get = (key)=>{
+            return this.data[key];
+        };
+        this.set = (update)=>{
+            Object.assign(this.data, update);
+        };
+    }
+    getAllAttributes() {
+        return this.data;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"f033k":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Model", ()=>Model);
+class Model {
+    constructor(events, sync, attributes){
+        this.events = events;
+        this.sync = sync;
+        this.attributes = attributes;
+    }
+    get get() {
+        return this.attributes.get;
+    }
+    set(update) {
+        this.attributes.set(update);
+        this.on("change", ()=>{
+            console.log(this);
+        });
+        this.trigger("change");
+    }
+    get trigger() {
+        return this.events.trigger;
+    }
+    get on() {
+        return this.events.on;
+    }
+    fetch() {
+        const id = this.get("id");
+        if (typeof id !== "number") throw new Error("Cannot Fetch Without an ID");
+        this.sync.fetch(id).then((response)=>{
+            this.set(response.data);
+        });
+    }
+    save() {
+        this.sync.save(this.attributes.getAllAttributes()).then((response)=>{
+            this.on("saved", ()=>{
+                console.log(this);
+            });
+            this.trigger("saved");
+        }).catch(()=>{
+            this.trigger("error");
+        });
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3wylh":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "ApiSync", ()=>ApiSync);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
-class Sync {
+class ApiSync {
     constructor(rootUrl){
         this.rootUrl = rootUrl;
         this.save = (data)=>{
@@ -677,8 +710,8 @@ class Sync {
             else return (0, _axiosDefault.default).post(this.rootUrl, data);
         };
     }
-    async fetch(id) {
-        return await (0, _axiosDefault.default).get(`${this.rootUrl}/${id}`);
+    fetch(id) {
+        return (0, _axiosDefault.default).get(`${this.rootUrl}/${id}`);
     }
 }
 
@@ -4799,27 +4832,6 @@ Object.entries(HttpStatusCode).forEach(([key, value])=>{
     HttpStatusCode[value] = key;
 });
 exports.default = HttpStatusCode;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6Bbds":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Attributes", ()=>Attributes);
-class Attributes {
-    constructor(data){
-        this.data = data;
-        this.//  K can only ever be a type from T which is current UserProps
-        // Return type is interface lookup
-        get = (key)=>{
-            return this.data[key];
-        };
-    }
-    set(update) {
-        Object.assign(this.data, update);
-    }
-    getAllAttributes() {
-        return this.data;
-    }
-}
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["3LmCz","h7u1C"], "h7u1C", "parcelRequire94c2")
 
