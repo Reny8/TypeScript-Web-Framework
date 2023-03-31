@@ -4885,7 +4885,7 @@ class UserList extends (0, _collectionView.CollectionView) {
     }
 }
 
-},{"./CollectionView":"4BOou","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./UserEdit":"3CihC"}],"4BOou":[function(require,module,exports) {
+},{"./CollectionView":"4BOou","./UserEdit":"3CihC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4BOou":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "CollectionView", ()=>CollectionView);

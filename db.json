@@ -2,12 +2,12 @@
   "users": [
     {
       "id": 1,
-      "name": "Reny",
+      "name": "Test User One",
       "age": 24
     },
     {
       "id": 2,
-      "name": "name",
+      "name": "Test User Two",
       "age": 33
     }
   ]
